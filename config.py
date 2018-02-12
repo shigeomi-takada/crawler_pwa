@@ -31,7 +31,7 @@ class CommonConfig(object):
 
     # For scraping headers
     HEADERS = {
-        'Accept-Language': 'ja'
+        'Accept-Language': 'en-US'
     }
 
     # UR List

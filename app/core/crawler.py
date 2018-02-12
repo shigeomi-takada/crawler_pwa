@@ -294,7 +294,8 @@ class Crawler():
 
         r = Connect().open()
         while True:
-            url = r.rpoplpush(app.config['URLS'], app.config['URLS_BACKUP'])
+            #url = r.rpoplpush(app.config['URLS'], app.config['URLS_BACKUP'])
+            url = r.rpop(app.config['URLS'])
             if not url:
                 app.logger.info('Url is empty. Loop has been done.')
                 print('url is empty. Loop has been done.')
