@@ -71,12 +71,11 @@ class Crawler():
         :param <class 'bs4.BeautifulSoup'> soup
         :return bool
         '''
-        links = soup.find_all('link')
-        for link in links:
-            if link.get('rel') == 'manifest':
-                return True
-
-        return False
+        # 存在しなければNoneが返る
+        if soup.find('link', attrs={'rel':'manifest'}):
+            return True
+        else:
+            return False
 
     def _filter_url(self, url):
         '''
@@ -254,10 +253,11 @@ class Crawler():
 
         print(url)
 
-        soup = BeautifulSoup(text, "lxml")
+        soup = BeautifulSoup(text, 'html5lib')
         hrefs = self._extract_href(soup)
         pwa = self._extract_pwa(soup)
-
+        print(pwa)
+        return
         links = self._join_relative_path(hrefs, url_parsed[0], url_parsed[1])
         urls_diff = self._extract_different_urls(links, url_parsed[1])
         urls_diff_new = self._filter_urls_exists(urls_diff)
