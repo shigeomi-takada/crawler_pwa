@@ -251,13 +251,9 @@ class Crawler():
         if not text:
             return None
 
-        print(url)
-
         soup = BeautifulSoup(text, 'html5lib')
         hrefs = self._extract_href(soup)
         pwa = self._extract_pwa(soup)
-        print(pwa)
-        return
         links = self._join_relative_path(hrefs, url_parsed[0], url_parsed[1])
         urls_diff = self._extract_different_urls(links, url_parsed[1])
         urls_diff_new = self._filter_urls_exists(urls_diff)
