@@ -1,5 +1,6 @@
 # coding: utf-8
 
+import re
 import requests
 import pytz
 import json
@@ -248,7 +249,7 @@ class Crawler():
 
         # urlの末尾が拡張子のものはスキップ
         if re.search(r".+\.[a-z0-9]+", url):
-            return None        
+            return None
 
         text = self._request_url(url)
 
@@ -275,6 +276,8 @@ class Crawler():
 
         if url_object_id and pwa:
             app.logger.info('pwa: {0}, url: {1}'.format(pwa, url))
+
+        return True
 
     def launch(self, url):
         '''
@@ -305,7 +308,7 @@ class Crawler():
                 print('url is empty. Loop has been done.')
                 break
 
-            p = Process(target=f, args=(num, arr))
+            p = Process(target=self._save, args=(url,))
             p.start()
             # 5秒経過しても終了しない場合は強制終了
             p.join(5)
