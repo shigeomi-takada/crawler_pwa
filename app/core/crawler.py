@@ -268,9 +268,8 @@ class Crawler():
             pwa,
             urls_diff_new)
 
-        if url_object_id:
-            app.logger.info('id: {0}, pwa: {1}, url: {2}'.format(
-                url_object_id, pwa, url))
+        if url_object_id and pwa:
+            app.logger.info('pwa: {0}, url: {1}'.format(pwa, url))
 
     def launch(self, url):
         '''
