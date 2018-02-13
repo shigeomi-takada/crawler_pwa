@@ -1,5 +1,5 @@
 # Crawler PWA
-
+_Crawl and scrape progressive web application pages_
 
 ## Dependencies
 - Python(>= 3.4)
@@ -57,7 +57,7 @@ Let's use crawler_pwa.
 
 First, you need to set initial url to start crawling. run:
 
-```python
+```
 python cpctl.py launch --url=https://www.python.org/
 ```
 
@@ -66,7 +66,7 @@ Key name is `cp:urls`.
 
 We are ready to crawl.
 To start crawling, run:
-```python
+```
 python cpctl.py run
 ```
 
