@@ -298,8 +298,8 @@ class Crawler():
         r = Connect().open()
         i = 0
         while True:
-            if i == 100:
-                raise Exception('Laps: 100, process is killed to prevent a memory leak.')
+            if i == 500:
+                raise Exception('Laps: 500, process is killed to prevent a memory leak.')
             # url = r.rpoplpush(app.config['URLS'], app.config['URLS_BACKUP'])
             url = r.rpop(app.config['URLS'])
             if not url:
