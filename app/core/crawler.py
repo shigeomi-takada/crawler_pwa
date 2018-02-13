@@ -308,7 +308,7 @@ class Crawler():
                 print('url is empty. Loop has been done.')
                 break
 
-            p = Process(target=self._save, args=(url,))
+            p = Process(target=self._start, args=(url,))
             p.start()
             # 5秒経過しても終了しない場合は強制終了
             p.join(5)
