@@ -190,7 +190,7 @@ class Crawler():
         :param str netloc
         :return list
         '''
-        return [link for link in links if urlparse(link)[1] != netloc]
+        return [link for link in links if not urlparse(link)[1] == netloc]
 
     def _filter_urls_exists(self, urls):
         '''
@@ -248,7 +248,7 @@ class Crawler():
                 return None
 
         # urlの末尾が拡張子のものはスキップ
-        if re.search(r".+\.[a-z0-9]+", url):
+        if re.search(r".+\.[a-z0-9]+", url_parsed[2]):
             return None
 
         text = self._request_url(url)
@@ -298,11 +298,10 @@ class Crawler():
         r = Connect().open()
         i = 0
         while True:
-            if i == 1000:
-                raise Exception('Laps: 1,000, process is killed to prevent a memory leak.')
+            if i == 100:
+                raise Exception('Laps: 100, process is killed to prevent a memory leak.')
             # url = r.rpoplpush(app.config['URLS'], app.config['URLS_BACKUP'])
             url = r.rpop(app.config['URLS'])
-
             if not url:
                 app.logger.info('Url is empty. Loop has been done.')
                 print('url is empty. Loop has been done.')
@@ -312,5 +311,7 @@ class Crawler():
             p.start()
             # 5秒経過しても終了しない場合は強制終了
             p.join(5)
-            self._start(url)
+            if not p.exitcode == 0:
+                p.terminate()
+                app.logger.info('Process is forced to be finished. url: {0}'.format(url))
             i += 1
