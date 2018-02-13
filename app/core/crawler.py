@@ -7,6 +7,7 @@ import random
 from datetime import datetime
 from urllib.parse import urlparse, urljoin
 from bs4 import BeautifulSoup
+from multiprocessing import Process
 
 from app import app
 from app.mysql.urls import Urls
@@ -31,7 +32,8 @@ class Crawler():
         try:
             r = requests.get(
                 url,
-                timeout=3.0,
+                # 最初のTCPコネクションまでのタイムアウト時間
+                timeout=1.0,
                 headers=headers,
                 allow_redirects=True)
         # 指定時間以上経過してもレスポンスが返ってこない場合
@@ -240,8 +242,13 @@ class Crawler():
         if not url_parsed[1]:
             return None
 
-        if 'yahoo' in url_parsed[1]:
-            return None
+        for skip_word in app.config['SKIP_WORDS']:
+            if skip_word in url:
+                return None
+
+        # urlの末尾が拡張子のものはスキップ
+        if re.search(r".+\.[a-z0-9]+", url):
+            return None        
 
         text = self._request_url(url)
 
@@ -298,5 +305,9 @@ class Crawler():
                 print('url is empty. Loop has been done.')
                 break
 
+            p = Process(target=f, args=(num, arr))
+            p.start()
+            # 5秒経過しても終了しない場合は強制終了
+            p.join(5)
             self._start(url)
             i += 1

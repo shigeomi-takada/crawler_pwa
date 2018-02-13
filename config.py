@@ -20,6 +20,10 @@ class CommonConfig(object):
 
     JSON_AS_ASCII = False
 
+    SKIP_WORDS = [
+        'yahoo', 'google', 'download', '.exe', '.mov'
+    ]
+
     # For scraping headers
     HEADERS = {
         'Accept-Language': 'en-US'
