@@ -9,7 +9,7 @@
 CREATE TABLE `urls` (
    `id`                INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
    `datetime`          DATETIME NOT NULL    COMMENT 'Datetime crawled',
-   `pwa`               TINYINT(1) NOT NULL DEFAULT 0 COMMENT '0: False, 1: True Progressive Web Appページかどうか',
+   `pwa`               TINYINT(1) NOT NULL DEFAULT 0 COMMENT '0: Not PWA, 1: PWA',
    `scheme`            TINYINT(1) NOT NULL    COMMENT '0: http, 1: https',
    `netloc`            VARCHAR(255) NOT NULL  COMMENT 'net location',
    `path`              VARCHAR(255) NOT NULL  COMMENT 'path',
