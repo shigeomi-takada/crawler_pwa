@@ -11,7 +11,7 @@ class Connect():
     Redisとの接続に関する処理
     '''
 
-    def __init__(self, host='api', role='master', decode_responses=True):
+    def __init__(self, role='master', decode_responses=True):
         '''
         @param str host
             You can set 'api' or 'pubsub'
@@ -23,7 +23,6 @@ class Connect():
         @param bool decode_responses
         '''
         self.role = role
-        self.host = host
         self.decode_responses = decode_responses
 
     def open(self):
@@ -46,23 +45,16 @@ class Connect():
 
         else:
 
-            if self.host == 'pubsub':
-                # Connect to PUBSUB master
-                host = os.getenv('REDIS_PUBSUB_MASTER_HOSTNAME')
-                password = os.getenv('REDIS_PUBSUB_MASTER_PASSWORD')
-                port = os.getenv('REDIS_PUBSUB_MASTER_PORT', 6379)
-                db = os.getenv('REDIS_PUBSUB_MASTER_DB', 0)
+            if self.role == 'slave':
+                host = os.getenv('REDIS_SLAVE_HOSTNAME')
+                password = os.getenv('REDIS_SLAVE_PASSWORD')
+                port = os.getenv('REDIS_SLAVE_PORT', 6379)
+                db = os.getenv('REDIS_SLAVE_DB', 0)
             else:
-                if self.role == 'slave':
-                    host = os.getenv('REDIS_API_SLAVE_HOSTNAME')
-                    password = os.getenv('REDIS_API_SLAVE_PASSWORD')
-                    port = os.getenv('REDIS_API_SLAVE_PORT', 6379)
-                    db = os.getenv('REDIS_API_SLAVE_DB', 0)
-                else:
-                    host = os.getenv('REDIS_API_MASTER_HOSTNAME')
-                    password = os.getenv('REDIS_API_MASTER_PASSWORD')
-                    port = os.getenv('REDIS_API_MASTER_PORT', 6379)
-                    db = os.getenv('REDIS_API_MASTER_DB', 0)
+                host = os.getenv('REDIS_MASTER_HOSTNAME')
+                password = os.getenv('REDIS_MASTER_PASSWORD')
+                port = os.getenv('REDIS_MASTER_PORT', 6379)
+                db = os.getenv('REDIS_MASTER_DB', 0)
 
             self.r = redis.StrictRedis(
                 host=host,
