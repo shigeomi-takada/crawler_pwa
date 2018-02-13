@@ -8,43 +8,30 @@ import fakeredis
 
 class Connect():
     '''
-    Redisとの接続に関する処理
+    Redis Connection
     '''
 
     def __init__(self, role='master', decode_responses=True):
         '''
-        @param str host
-            You can set 'api' or 'pubsub'
-            default is 'api'
-
-        @param str role
+        :param str role
             default is 'master'
-
-        @param bool decode_responses
+        :param bool decode_responses
         '''
         self.role = role
         self.decode_responses = decode_responses
 
     def open(self):
         '''
-        decode_responsesをtrueにしないと、返り値がbyte型になる　
-        例: [(b'1489238', 0.055784604491181125)]
-        trueにしない場合は自分でByte型になっている箇所を文字列として扱うためにデコードする必要がある
-        このタイミングではRedisとの接続チェックは行われない。コマンドを実行した時点でredisとの
-        接続が発生する。
+        :return redis connection object
         '''
-
-        # テストの時はfakeredisに接続する
+        # When test, connect to fakeredis
         if sys.argv[0] == 'python -m unittest':
             self.r = fakeredis.FakeStrictRedis(
                 decode_responses=True,
-                charset="utf-8"
-            )
+                charset="utf-8")
 
             return self.r
-
         else:
-
             if self.role == 'slave':
                 host = os.getenv('REDIS_SLAVE_HOSTNAME')
                 password = os.getenv('REDIS_SLAVE_PASSWORD')
@@ -62,25 +49,17 @@ class Connect():
                 port=port,
                 db=db,
                 decode_responses=self.decode_responses,
-                socket_timeout=60
-            )
+                socket_timeout=60)
 
             return self.r
 
     def is_connect(self):
         '''
         Check Redis Connection
-        @return bool
+        :return bool
         '''
-
-        r = self.open()
-
         try:
-            # 正常であればTrueが返る
-            ping = r.ping()
-
-            if ping:
+            if self.open().ping():
                 return True
-
         except:
             return False

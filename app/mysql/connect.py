@@ -8,12 +8,12 @@ from flask import abort
 
 class Connect():
     '''
-    MYSQLとの接続に関する処理
+    MYSQL Connection
     '''
 
     def __init__(self, role='master'):
         '''
-        @param str role
+        :param str role
             You can set 'master' or 'slave'
             Default is 'master'
         '''
@@ -80,7 +80,7 @@ class Connect():
     def is_connect(self):
         '''
         Check MYSQL Connection
-        @return bool
+        :return bool
         '''
         self.open()
         return self.cnx.is_connected()

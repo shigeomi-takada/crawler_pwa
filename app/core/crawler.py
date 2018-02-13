@@ -1,13 +1,10 @@
 # coding: utf-8
 
-import re
-import os
 import requests
 import pytz
-import time
 import json
 import random
-from datetime import datetime, timedelta
+from datetime import datetime
 from urllib.parse import urlparse, urljoin
 from bs4 import BeautifulSoup
 from multiprocessing import Process
@@ -23,16 +20,12 @@ class Crawler():
     url関連の処理は当classにまとめる
     '''
 
-    def __init__(self):
-        ''''''
-
-
     def _request_url(self, url):
         '''
         特定のURLのテキストデータをリクエストして取得する
         5.0秒以上経っても返ってこないレスポンスは無視
-        @param str url
-        @return str
+        :param str url
+        :return str
         '''
         headers = app.config['HEADERS']
         headers['User-Agent'] = random.choice(app.config['UA_LISTS'])
@@ -57,8 +50,9 @@ class Crawler():
             return ''
 
         if r.status_code >= 300:
-            app.logger.info('status_code: {0} url: {1} Somethig is wrong'.format(
-                r.status_code, url))
+            app.logger.info(
+                'status_code: {0} url: {1} Somethig is wrong'.format(
+                    r.status_code, url))
             return ''
 
         return r.text
@@ -155,7 +149,7 @@ class Crawler():
             if host not in links:
                 links[host] = 1
             else:
-                links[host]+=1
+                links[host] += 1
 
         hrefs_sorted = [url for url, count in sorted(
             links.items(),
@@ -215,13 +209,14 @@ class Crawler():
         elif scheme == 'https':
             scheme = 1
         else:
-            app.logger.info('scheme is not http or https. scheme is {0}'.format(scheme))
+            app.logger.info(
+                'scheme is not http or https. scheme is {0}'.format(scheme))
             return 0
 
         with Urls() as m:
 
             if not m.is_exist(netloc):
-                url_object_id = m.add({
+                m.add({
                     'datetime': now,
                     'scheme': scheme,
                     'netloc': netloc,
@@ -258,7 +253,8 @@ class Crawler():
         urls_diff = self._extract_different_urls(links, url_parsed[1])
         urls_diff_new = self._filter_urls_exists(urls_diff)
 
-        now = datetime.now(pytz.timezone('Asia/Tokyo')).strftime("%Y-%m-%d %H:%M:%S")
+        now = datetime.now(
+            pytz.timezone('Asia/Tokyo')).strftime("%Y-%m-%d %H:%M:%S")
 
         url_object_id = self._save(
             now,
@@ -289,7 +285,7 @@ class Crawler():
 
         r = Connect().open()
         while True:
-            #url = r.rpoplpush(app.config['URLS'], app.config['URLS_BACKUP'])
+            # url = r.rpoplpush(app.config['URLS'], app.config['URLS_BACKUP'])
             url = r.rpop(app.config['URLS'])
             if not url:
                 app.logger.info('Url is empty. Loop has been done.')

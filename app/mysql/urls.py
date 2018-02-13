@@ -6,7 +6,12 @@ from app.mysql.connect import Connect
 
 class Urls():
     '''
-    コンテキストマネージャで呼び出すこと。
+    This class is need to be called with context manager
+    e.g.
+    with Urls() as u:
+        is_exist = tu.is_exist('https://www.example.com')
+    if is_exist:
+        pass
     '''
 
     def __init__(self, role='master'):
@@ -19,19 +24,19 @@ class Urls():
 
     def __exit__(self, exc_type, exc_value, exc_tb):
         '''
-        意図的にcloseしてあげないとすぐこのエラーが発生する。
+        意図的にcloseしないとすぐこのエラーが発生する。
         ReferenceError: weakly-referenced object no longer exists
         '''
         if exc_type is None:
             self.con.close()
         else:
-            app.logger.warning('Work mysql connection closing is failed')
+            app.logger.warning('Urls mysql connection closing is failed')
             return False
 
     def add(self, urls):
         '''
-        @param tuple urls
-        @return int insertされたレコードのID
+        :param tuple urls
+        :return int ID was inserted
         '''
 
         query = ('''
