@@ -7,7 +7,6 @@ import random
 from datetime import datetime
 from urllib.parse import urlparse, urljoin
 from bs4 import BeautifulSoup
-from multiprocessing import Process
 
 from app import app
 from app.mysql.urls import Urls
@@ -45,7 +44,7 @@ class Crawler():
             return ''
 
         if r.status_code == 404:
-            app.logger.info('status_code: {0} url: {0} is not found'.format(
+            app.logger.info('status_code: {0} url: {1} is not found'.format(
                 r.status_code, url))
             return ''
 
@@ -241,6 +240,9 @@ class Crawler():
         if not url_parsed[1]:
             return None
 
+        if 'yahoo' in url_parsed[1]:
+            return None
+
         text = self._request_url(url)
 
         if not text:
@@ -284,13 +286,17 @@ class Crawler():
         app.logger.info('run_crawler start')
 
         r = Connect().open()
+        i = 0
         while True:
+            if i == 1000:
+                raise Exception('Laps: 1,000, process is killed to prevent a memory leak.')
             # url = r.rpoplpush(app.config['URLS'], app.config['URLS_BACKUP'])
             url = r.rpop(app.config['URLS'])
+
             if not url:
                 app.logger.info('Url is empty. Loop has been done.')
                 print('url is empty. Loop has been done.')
                 break
-            p = Process(target=self._start, args=(url,))
-            p.start()
-            p.join()
+
+            self._start(url)
+            i += 1
