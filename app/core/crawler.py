@@ -248,7 +248,7 @@ class Crawler():
                 return None
 
         # urlの末尾が拡張子のものはスキップ
-        if re.search(r".+\.[a-z0-9]+", url_parsed[2]):
+        if re.search(r".+\.[a-zA-Z]+", url_parsed[2]):
             return None
 
         text = self._request_url(url)
