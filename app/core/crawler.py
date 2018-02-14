@@ -249,7 +249,6 @@ class Crawler():
 
         '''
         url_parsed = urlparse(url)
-        print(url)
 
         if not url_parsed[1]:
             return None
