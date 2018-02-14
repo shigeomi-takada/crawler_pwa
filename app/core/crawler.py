@@ -192,6 +192,15 @@ class Crawler():
         '''
         return [link for link in links if not urlparse(link)[1] == netloc]
 
+    def _is_exist(self, url):
+        '''
+        DBに保存されていないもののみを抽出して返す
+        :param list
+        :return list
+        '''
+        with Urls() as m:
+            return m.is_exist(urlparse(url)[1])
+
     def _filter_urls_exists(self, urls):
         '''
         DBに保存されていないもののみを抽出して返す
@@ -251,6 +260,10 @@ class Crawler():
         if re.search(r".+\.[a-zA-Z]+", url_parsed[2]):
             return None
 
+        # すでにクローリング済みであればスキップ
+        if self._is_exist(url):
+            return None
+
         text = self._request_url(url)
 
         if not text:
@@ -298,8 +311,6 @@ class Crawler():
         r = Connect().open()
         i = 0
         while True:
-            if i == 500:
-                raise Exception('Laps: 500, process is killed to prevent a memory leak.')
             # url = r.rpoplpush(app.config['URLS'], app.config['URLS_BACKUP'])
             url = r.rpop(app.config['URLS'])
             if not url:
@@ -309,9 +320,6 @@ class Crawler():
 
             p = Process(target=self._start, args=(url,))
             p.start()
-            # 5秒経過しても終了しない場合は強制終了
+            # 5秒経過しても終了しない場合はTimeout
             p.join(5)
-            if not p.exitcode == 0:
-                p.terminate()
-                app.logger.info('Process is forced to be finished. url: {0}'.format(url))
-            i += 1
+            p.terminate()
