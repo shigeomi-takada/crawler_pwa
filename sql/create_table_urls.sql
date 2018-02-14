@@ -20,3 +20,4 @@ DEFAULT CHARSET=utf8;
 
 create index datetime_index on urls(datetime);
 create index netloc_index on urls(netloc);
+create index path_index on urls(path);

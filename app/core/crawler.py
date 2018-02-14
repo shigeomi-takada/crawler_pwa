@@ -34,7 +34,7 @@ class Crawler():
             r = requests.get(
                 url,
                 # 最初のTCPコネクションまでのタイムアウト時間
-                timeout=1.0,
+                timeout=3.0,
                 headers=headers,
                 allow_redirects=True)
         # 指定時間以上経過してもレスポンスが返ってこない場合
@@ -192,14 +192,15 @@ class Crawler():
         '''
         return [link for link in links if not urlparse(link)[1] == netloc]
 
-    def _is_exist(self, url):
+    def is_exist_strictly(self, url):
         '''
         DBに保存されていないもののみを抽出して返す
         :param list
         :return list
         '''
+        url_parsed = urlparse(url)
         with Urls() as m:
-            return m.is_exist(urlparse(url)[1])
+            return m.is_exist_strictly(url_parsed[1], url_parsed[2])
 
     def _filter_urls_exists(self, urls):
         '''
@@ -248,6 +249,7 @@ class Crawler():
 
         '''
         url_parsed = urlparse(url)
+        print(url)
 
         if not url_parsed[1]:
             return None
@@ -261,7 +263,7 @@ class Crawler():
             return None
 
         # すでにクローリング済みであればスキップ
-        if self._is_exist(url):
+        if self.is_exist_strictly(url):
             return None
 
         text = self._request_url(url)
