@@ -197,9 +197,19 @@ class Crawler():
         :param list
         :return list
         '''
+
         url_parsed = urlparse(url)
+
+        # urlをホスト部分とドメイン部分に分ける。
+        # ただし、www.example.co.jpのようにホスト部分が1つの場合のみにしか対応しない
+        # info.www.example.co.jpこういうFQDNはお手上げ。
+        domain = url_parsed[1].split('.', maxsplit=1)
+
         with Urls() as m:
-            return m.is_exist_strictly(url_parsed[1], url_parsed[2])
+            return m.is_exist_strictly(
+                url_parsed[1],
+                url_parsed[2],
+                '%{}'.format(domain[1]))
 
     def _filter_urls_exists(self, urls):
         '''
