@@ -81,26 +81,23 @@ class Urls():
         self.m.execute(query, (netloc,))
         return self.m.rowcount
 
-    def is_exist_strictly(self, netloc, path, cond):
+    def is_exist_strictly(self, netloc, cond):
         '''
         同じnetlocがすでに保存済みかチェックする
         存在しなければ0,存在すれば1を返す
         :param str netloc
         :return bool
         '''
-        if path is None:
-            path = ''
 
         query = '''
             SELECT
             Url.id
             FROM urls AS Url
             WHERE
-            Url.netloc = %s AND
-            Url.path = %s
+            Url.netloc = %s
         '''
 
-        self.m.execute(query, (netloc, path))
+        self.m.execute(query, (netloc,))
 
         if self.m.rowcount >= 1:
             return True

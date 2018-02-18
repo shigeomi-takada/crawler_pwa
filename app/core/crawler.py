@@ -208,7 +208,6 @@ class Crawler():
         with Urls() as m:
             return m.is_exist_strictly(
                 url_parsed[1],
-                url_parsed[2],
                 '%{}'.format(domain[1]))
 
     def _filter_urls_exists(self, urls):
