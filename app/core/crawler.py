@@ -17,14 +17,13 @@ from app.redis.connect import Connect
 
 class Crawler():
     '''
-    spam messagesには80%以上の確率でurlが含まれる。
     url関連の処理は当classにまとめる
     '''
 
     def _request_url(self, url):
         '''
         特定のURLのテキストデータをリクエストして取得する
-        5.0秒以上経っても返ってこないレスポンスは無視
+        3.0秒以上経っても返ってこないレスポンスは無視
         :param str url
         :return str
         '''
@@ -198,9 +197,18 @@ class Crawler():
         :param list
         :return list
         '''
+
         url_parsed = urlparse(url)
+
+        # urlをホスト部分とドメイン部分に分ける。
+        # ただし、www.example.co.jpのようにホスト部分が1つの場合のみにしか対応しない
+        # info.www.example.co.jpこういうFQDNはお手上げ。
+        domain = url_parsed[1].split('.', maxsplit=1)
+
         with Urls() as m:
-            return m.is_exist_strictly(url_parsed[1], url_parsed[2])
+            return m.is_exist_strictly(
+                url_parsed[1],
+                '%{}'.format(domain[1]))
 
     def _filter_urls_exists(self, urls):
         '''
@@ -295,7 +303,7 @@ class Crawler():
 
     def launch(self, url):
         '''
-        redisにurlが空の場合は当メソッドを呼び出すこと
+        app.config['URLS']が空の場合は当メソッドを呼び出すこと
         :param str url
         '''
         self._start(url)
@@ -310,9 +318,7 @@ class Crawler():
         app.logger.info('run_crawler start')
 
         r = Connect().open()
-        i = 0
         while True:
-            # url = r.rpoplpush(app.config['URLS'], app.config['URLS_BACKUP'])
             url = r.rpop(app.config['URLS'])
             if not url:
                 app.logger.info('Url is empty. Loop has been done.')
@@ -322,5 +328,9 @@ class Crawler():
             p = Process(target=self._start, args=(url,))
             p.start()
             # 5秒経過しても終了しない場合はTimeout
+            # 例えば、4GBのファイルダウンロードなどに当たるといつまでたっても終わらないので、
+            # 強制終了させる。本当はrequets側で終了させたいが、そういう設定が無いようなので
+            # ここで終了させる
             p.join(5)
+            # 生成された子プロセスを終了させる。
             p.terminate()
