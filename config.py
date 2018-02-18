@@ -21,7 +21,8 @@ class CommonConfig(object):
     JSON_AS_ASCII = False
 
     SKIP_WORDS = [
-        'yahoo', 'google', 'download', '.exe', '.mov'
+        'yahoo', 'google', 'tumblr.com', 'radio.net',
+        'knoji.com', 'download', '.exe', '.mov'
     ]
 
     # For scraping headers
