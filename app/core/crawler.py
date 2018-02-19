@@ -213,18 +213,21 @@ class Crawler():
         host, domain = self._extract_host_domain(url_parsed[1])
 
         with Urls() as m:
-            return m.is_exist_strictly(
-                url_parsed[1],
-                '%{}'.format(domain))
+            return m.is_exist_strictly(url_parsed[1], domain)
 
-    def _filter_urls_exists(self, urls):
+    def _filter_urls_exists(self, url):
         '''
         DBに保存されていないもののみを抽出して返す
-        :param list
-        :return list
+        :param str url
+        :return str
         '''
+
+        url_parsed = urlparse(url)
+        host, domain = self._extract_host_domain(url_parsed[1])
+
         with Urls() as m:
-            return [url for url in urls if not m.is_exist(urlparse(url)[1])]
+            if not m.is_exist_strictly(url_parsed[1], domain):
+                return url
 
     def _save(self, now, scheme, netloc, path, pwa, urls_external):
         '''
@@ -294,13 +297,10 @@ class Crawler():
         pwa = self._extract_pwa(soup)
         links = self._join_relative_path(hrefs, url_parsed[0], url_parsed[1])
         urls_diff = self._extract_different_urls(links, url_parsed[1])
-        urls_diff_new = self._filter_urls_exists(urls_diff)
-
-        now = datetime.now(
-            pytz.timezone('Asia/Tokyo')).strftime("%Y-%m-%d %H:%M:%S")
-
+        urls_diff_new = [url_diff for url_diff in urls_diff if self._filter_urls_exists(url_diff)]
         url_object_id = self._save(
-            now,
+            datetime.now(
+                pytz.timezone('Asia/Tokyo')).strftime("%Y-%m-%d %H:%M:%S"),
             url_parsed[0],
             url_parsed[1],
             url_parsed[2],
