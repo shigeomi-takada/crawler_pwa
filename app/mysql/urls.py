@@ -44,17 +44,21 @@ class Urls():
                 datetime,
                 scheme,
                 netloc,
+                host,
+                domain,
                 path,
                 pwa,
                 urls_external
             ) VALUES (
-                %s, %s, %s, %s, %s, %s)
+                %s, %s, %s, %s, %s, %s, %s, %s)
         ''')
 
         params = (
             urls['datetime'],
             urls['scheme'],
             urls['netloc'],
+            urls['host'],
+            urls['domain'],
             urls['path'],
             urls['pwa'],
             urls['urls_external'],)
@@ -81,7 +85,7 @@ class Urls():
         self.m.execute(query, (netloc,))
         return self.m.rowcount
 
-    def is_exist_strictly(self, netloc, cond):
+    def is_exist_strictly(self, netloc, domain):
         '''
         同じnetlocがすでに保存済みかチェックする
         存在しなければ0,存在すれば1を返す
@@ -107,10 +111,10 @@ class Urls():
             Url.id
             FROM urls AS Url
             WHERE
-            Url.netloc LIKE %s
+            Url.domain = %s
         '''
 
-        res = self.m.execute(query, (cond,))
+        res = self.m.execute(query, (domain,))
 
         if self.m.rowcount > 12:
             return True

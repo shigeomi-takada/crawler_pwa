@@ -191,6 +191,17 @@ class Crawler():
         '''
         return [link for link in links if not urlparse(link)[1] == netloc]
 
+    def _extract_host_domain(self, netloc):
+        '''
+        urlをホスト部分とドメイン部分に分ける。
+        ただし、www.example.co.jpのようにホスト部分が1つの場合のみにしか対応しない
+        info.www.example.co.jpこういうFQDNはお手上げ。
+        :param str netloc
+        :param tuple
+        '''
+        url = netloc.split('.', maxsplit=1)
+        return url[0], url[1]
+
     def is_exist_strictly(self, url):
         '''
         DBに保存されていないもののみを抽出して返す
@@ -199,16 +210,12 @@ class Crawler():
         '''
 
         url_parsed = urlparse(url)
-
-        # urlをホスト部分とドメイン部分に分ける。
-        # ただし、www.example.co.jpのようにホスト部分が1つの場合のみにしか対応しない
-        # info.www.example.co.jpこういうFQDNはお手上げ。
-        domain = url_parsed[1].split('.', maxsplit=1)
+        host, domain = self._extract_host_domain(url_parsed[1])
 
         with Urls() as m:
             return m.is_exist_strictly(
                 url_parsed[1],
-                '%{}'.format(domain[1]))
+                '%{}'.format(domain))
 
     def _filter_urls_exists(self, urls):
         '''
@@ -233,6 +240,8 @@ class Crawler():
                 'scheme is not http or https. scheme is {0}'.format(scheme))
             return 0
 
+        host, domain = self._extract_host_domain(netloc)
+
         with Urls() as m:
 
             if not m.is_exist(netloc):
@@ -240,6 +249,8 @@ class Crawler():
                     'datetime': now,
                     'scheme': scheme,
                     'netloc': netloc,
+                    'host': host,
+                    'domain': domain,
                     'path': path,
                     'pwa': pwa,
                     'urls_external': json.dumps(urls_external)
