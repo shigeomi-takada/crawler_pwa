@@ -35,10 +35,9 @@ class Scores():
 
     def add(self, urls):
         '''
-        :param tuple urls
+        :param dict urls
         :return int ID was inserted
         '''
-
         query = ('''
             INSERT INTO scores (
                 created_at,

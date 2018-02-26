@@ -46,7 +46,7 @@ class Score():
         with Scores() as m:
             score_id = m.add({
                 'url_id': score['url_id'],
-                'ssl': score['ssl'],
+                'is_ssl': score['is_ssl'],
                 'performance': score['performance'],
                 'pwa': score['pwa'],
                 'accessibility': score['accessibility'],
@@ -91,7 +91,7 @@ class Score():
         if not is_ssl:
             self._add({
                 'url_id': url['id'],
-                'ssl': 0,
+                'is_ssl': 0,
                 'performance': 0,
                 'pwa': 0,
                 'accessibility': 0,
@@ -114,7 +114,7 @@ class Score():
             app.logger.info('Failed, url: {0}'.format(url_access))
             self._add({
                 'url_id': url['id'],
-                'ssl': 1,
+                'is_ssl': 1,
                 'performance': 0,
                 'pwa': 0,
                 'accessibility': 0,
@@ -131,7 +131,7 @@ class Score():
 
         score_id = self._add({
             'url_id': url['id'],
-            'ssl': 1,
+            'is_ssl': 1,
             'performance': score[0],
             'pwa': score[1],
             'accessibility': score[2],
@@ -147,6 +147,6 @@ class Score():
         ''''''
         with Urls() as m:
             pwas = m.get_pwas()
-
-        with Pool() as pool:
-            pool.map(self._lighthouse, pwas, chunksize=1000)
+        self._lighthouse(pwas[0])
+    #    with Pool() as pool:
+        #    pool.map(self._lighthouse, pwas, chunksize=1000)
