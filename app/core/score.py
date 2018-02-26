@@ -68,11 +68,14 @@ class Score():
 
         url_access = 'https://' + url['netloc']
 
-        print('url: {}'.format(url_access))
-
-        res_process = subprocess.run(
-            ["lighthouse", url_access, "--quiet", "--output", "json"],
-            stdout=subprocess.PIPE)
+        try:
+            res_process = subprocess.run(
+                ["lighthouse", url_access, "--quiet", "--output", "json"],
+                stdout=subprocess.PIPE)
+        except Exception as e:
+            app.logger.info(e)
+            app.logger.info('Failed, url: {0}'.format(url_access))
+            return None
 
         if res_process.returncode != 0:
             app.logger.info('Failed, url: {0}'.format(url_access))
