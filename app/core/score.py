@@ -104,7 +104,7 @@ class Score():
             'seo': score[4]
         })
 
-        print('Success, url: {0},score_id:{1}'.format(
+        print('Success, url: {0}, score_id:{1}'.format(
             url_access,
             score_id))
 
