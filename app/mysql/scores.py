@@ -43,7 +43,7 @@ class Scores():
                 created_at,
                 updated_at,
                 url_id,
-                ssl,
+                is_ssl,
                 performance,
                 pwa,
                 accessibility,
@@ -55,7 +55,7 @@ class Scores():
 
         params = (
             urls['url_id'],
-            urls['ssl'],
+            urls['is_ssl'],
             urls['performance'],
             urls['pwa'],
             urls['accessibility'],
