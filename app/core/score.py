@@ -1,6 +1,7 @@
 # coding: utf-8
 
 import json
+import requests
 import subprocess
 from multiprocessing import Pool
 
@@ -45,6 +46,7 @@ class Score():
         with Scores() as m:
             score_id = m.add({
                 'url_id': score['url_id'],
+                'ssl': score['ssl'],
                 'performance': score['performance'],
                 'pwa': score['pwa'],
                 'accessibility': score['accessibility'],
@@ -53,6 +55,21 @@ class Score():
             })
 
         return score_id
+
+    def _is_ssl(self, url):
+        '''
+        sslに対応していないページにhttpsでアクセスすると停止するようなので
+        lighthouseを起動する前にrequestsでSSLに対応しているかチェックする
+        '''
+        try:
+            res = requests.get(url, verify=True)
+        except requests.exceptions.SSLError as e:
+            return False
+
+        if res.status_code == 200:
+            return True
+        else:
+            return False
 
     def _lighthouse(self, url):
         '''
@@ -68,6 +85,22 @@ class Score():
 
         url_access = 'https://' + url['netloc']
 
+        # SSL対応チェック
+        is_ssl = self._is_ssl(url_access)
+
+        if not is_ssl:
+            self._add({
+                'url_id': url['id'],
+                'ssl': 0,
+                'performance': 0,
+                'pwa': 0,
+                'accessibility': 0,
+                'best_practice': 0,
+                'seo': 0
+            })
+            app.logger.info('Failed: SSL Error, url: {0}'.format(url_access))
+            return None
+
         try:
             res_process = subprocess.run(
                 ["lighthouse", url_access, "--quiet", "--output", "json"],
@@ -81,6 +114,7 @@ class Score():
             app.logger.info('Failed, url: {0}'.format(url_access))
             self._add({
                 'url_id': url['id'],
+                'ssl': 1,
                 'performance': 0,
                 'pwa': 0,
                 'accessibility': 0,
@@ -97,6 +131,7 @@ class Score():
 
         score_id = self._add({
             'url_id': url['id'],
+            'ssl': 1,
             'performance': score[0],
             'pwa': score[1],
             'accessibility': score[2],

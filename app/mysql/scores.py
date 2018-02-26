@@ -44,17 +44,19 @@ class Scores():
                 created_at,
                 updated_at,
                 url_id,
+                ssl,
                 performance,
                 pwa,
                 accessibility,
                 best_practice,
                 seo
             ) VALUES (
-                NOW(), NOW(), %s, %s, %s, %s, %s, %s)
+                NOW(), NOW(), %s, %s, %s, %s, %s, %s, %s)
         ''')
 
         params = (
             urls['url_id'],
+            urls['ssl'],
             urls['performance'],
             urls['pwa'],
             urls['accessibility'],
