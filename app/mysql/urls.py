@@ -50,7 +50,7 @@ class Urls():
                 pwa,
                 urls_external
             ) VALUES (
-                %s, %s, %s, %s, %s, %s, %s, %s)
+                NOW(), NOW(), %s, %s, %s, %s, %s, %s)
         ''')
 
         params = (
@@ -120,3 +120,18 @@ class Urls():
             return True
 
         return False
+
+    def get_pwas(self):
+        '''
+        pwa対応のページを全て取得する
+        '''
+        query = '''
+            SELECT
+            Url.id,
+            Url.netloc
+            FROM urls AS Url
+            WHERE
+            Url.pwa = 1
+        '''
+        self.m.execute(query)
+        return self.m.fetchall()

@@ -2,6 +2,7 @@
 
 import fire
 from app.core.crawler import Crawler
+from app.core.score import Score
 
 
 class Cpctl:
@@ -17,9 +18,13 @@ class Cpctl:
         '''
         Crawler().launch(url)
 
-    def run(self):
+    def run_crawler(self):
         ''''''
         Crawler().run()
+
+    def run_score(self):
+        ''''''
+        Score().run()
 
 
 if __name__ == '__main__':
