@@ -1,6 +1,7 @@
 # coding: utf-8
 
 import json
+import random
 import requests
 import subprocess
 from multiprocessing import Pool
@@ -61,8 +62,13 @@ class Score():
         sslに対応していないページにhttpsでアクセスすると停止するようなので
         lighthouseを起動する前にrequestsでSSLに対応しているかチェックする
         '''
+        headers = app.config['HEADERS']
+        headers['User-Agent'] = random.choice(app.config['UA_LISTS'])
         try:
-            res = requests.get(url, verify=True)
+            res = requests.get(
+                url,
+                headers=headers,
+                verify=True)
         except requests.exceptions.SSLError as e:
             return False
 
