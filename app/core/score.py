@@ -68,12 +68,14 @@ class Score():
 
         url_access = 'https://' + url['netloc']
 
+        print('url: {}'.format(url_access))
+
         res_process = subprocess.run(
             ["lighthouse", url_access, "--quiet", "--output", "json"],
             stdout=subprocess.PIPE)
 
         if res_process.returncode != 0:
-            app.logger.info('url: {0}'.format(url_access))
+            app.logger.info('Failed, url: {0}'.format(url_access))
             self._add({
                 'url_id': url['id'],
                 'performance': 0,
@@ -90,7 +92,7 @@ class Score():
         # 順番が固定されていることを前提とする
         score = [category['score'] for category in categories]
 
-        self._add({
+        score_id = self._add({
             'url_id': url['id'],
             'performance': score[0],
             'pwa': score[1],
@@ -99,10 +101,13 @@ class Score():
             'seo': score[4]
         })
 
+        print('Success, score_id:{}'.format(score_id))
+
     def run(self):
         ''''''
         with Urls() as m:
             pwas = m.get_pwas()
 
-        with Pool() as pool:
-            pool.map(self._lighthouse, pwas, chunksize=1000)
+        self._lighthouse(pwas[0])
+        #with Pool() as pool:
+        #    pool.map(self._lighthouse, pwas, chunksize=1000)
