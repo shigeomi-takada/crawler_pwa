@@ -108,6 +108,5 @@ class Score():
         with Urls() as m:
             pwas = m.get_pwas()
 
-        self._lighthouse(pwas[0])
-        #with Pool() as pool:
-        #    pool.map(self._lighthouse, pwas, chunksize=1000)
+        with Pool() as pool:
+            pool.map(self._lighthouse, pwas, chunksize=1000)
