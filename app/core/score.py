@@ -153,6 +153,8 @@ class Score():
         ''''''
         with Urls() as m:
             pwas = m.get_pwas()
+            
+        print('The number of pwa pages: {}'.format(len(pwas)))
 
         with Pool() as pool:
             pool.map(self._lighthouse, pwas, chunksize=1000)
