@@ -50,7 +50,7 @@ class Urls():
                 pwa,
                 urls_external
             ) VALUES (
-                NOW(), NOW(), %s, %s, %s, %s, %s, %s)
+                %s, %s, %s, %s, %s, %s, %s, %s)
         ''')
 
         params = (
