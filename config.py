@@ -22,7 +22,7 @@ class CommonConfig(object):
 
     SKIP_WORDS = [
         'yahoo', 'google', 'tumblr.com', 'radio.net',
-        'knoji.com', 'download', '.exe', '.mov'
+        'knoji.com', 'download', '.exe', '.mov', 'kwnews.com'
     ]
 
     # For scraping headers
